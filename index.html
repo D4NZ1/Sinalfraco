@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sinal Fraco</title>
+<style>
+:root{color-scheme:dark;--bg:#050607;--fg:#c9d1cc;--dim:#5d6862;--red:#9c1c1c;--msg:#141a17;--you:#1d2a3a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif;overflow:hidden;touch-action:manipulation}
+button,input{font:inherit;color:inherit}
+.scr{position:absolute;inset:0;display:none;flex-direction:column}
+.scr.on{display:flex}
+#boot{justify-content:center;padding:28px;gap:16px}
+#boot h1{font-size:44px;font-weight:400;letter-spacing:.02em;margin:0;animation:fl 6s infinite}
+#boot p{margin:0;line-height:1.5;color:var(--dim);font-size:16px}
+#boot input{background:#0c0f0e;border:1px solid #2a332e;padding:14px;font-size:18px;border-radius:4px;user-select:text}
+.btn{background:#0f1411;border:1px solid #33403a;padding:14px;font-size:18px;border-radius:4px}
+.btn:active{background:#1b241f}
+@keyframes fl{0%,92%,96%,100%{opacity:1}94%{opacity:.2}97%{opacity:.7}}
+#bar{display:flex;justify-content:space-between;padding:8px 16px;font:13px ui-monospace,monospace;color:var(--dim);position:relative}
+#fear{position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--red);transition:width 1s}
+#home{padding:24px 18px;gap:22px}
+#home h2{font-weight:400;font-size:20px;margin:6px 0 0;color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.app{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:14px;position:relative}
+.ico{width:64px;height:64px;border-radius:16px;background:#0e1311;border:1px solid #29332e;display:grid;place-items:center;font-size:28px}
+.bdg{position:absolute;top:-4px;right:calc(50% - 40px);background:var(--red);border-radius:10px;min-width:20px;padding:1px 6px;font-size:12px;display:none}
+.top{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #1a211d}
+.top button{background:none;border:0;font-size:22px;padding:4px 10px}
+#msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;user-select:text}
+.m{max-width:82%;padding:10px 13px;border-radius:14px;line-height:1.4;font-size:17px;background:var(--msg)}
+.m.me{align-self:flex-end;background:var(--you)}
+.m.ty{color:var(--dim);font-style:italic}
+#inp{display:flex;gap:8px;padding:10px;border-top:1px solid #1a211d}
+#inp input{flex:1;background:#0c0f0e;border:1px solid #2a332e;border-radius:20px;padding:12px 16px;font-size:17px;user-select:text}
+#inp button{background:#14201a;border:1px solid #2f3f36;border-radius:20px;padding:0 18px}
+#fl{flex:1;overflow-y:auto}
+.f{display:flex;gap:12px;padding:15px 16px;border-bottom:1px solid #131a16;align-items:center;font-size:17px}
+.f small{display:block;color:var(--dim);font-size:13px;font-family:ui-monospace,monospace}
+.f.new{animation:nw 2.4s}
+.f.rd{color:var(--dim)}
+@keyframes nw{0%,30%{background:#2a0e0e}100%{background:none}}
+#vw{flex:1;overflow-y:auto;padding:18px;line-height:1.6;font-size:18px;white-space:pre-wrap;user-select:text}
+#vw canvas{width:100%;border:1px solid #222;display:block;margin-bottom:12px}
+#hide{background:#000;z-index:20;align-items:center;justify-content:center;text-align:center;padding:30px}
+#hide span{color:#6b1414;font-size:20px;transition:opacity 2s;line-height:1.5}
+#scare{background:#000;z-index:30}
+#scare canvas{width:100%;height:100%}
+#end{background:#000;z-index:40;justify-content:center;padding:30px;gap:16px;line-height:1.6;font-size:19px}
+#vig{position:fixed;inset:0;pointer-events:none;z-index:15;box-shadow:inset 0 0 0 transparent;transition:box-shadow 2s}
+.gl{animation:gl .35s steps(2) 3}
+@keyframes gl{0%{transform:translate(3px,0);filter:hue-rotate(90deg)}50%{transform:translate(-4px,2px);filter:invert(1)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){#boot h1,.gl{animation:none}}
+</style></head><body>
+<div id="vig"></div>
+
+<div id="boot" class="scr on">
+<h1>Sinal Fraco</h1>
+<p>Jogue sozinho, no escuro, com fone e som ligado. O jogo usa vibração, voz e informações do seu aparelho (hora, bateria, conexão). Nada sai do seu celular.</p>
+<p>Este telefone foi encontrado. Configure o perfil para continuar.</p>
+<input id="nm" placeholder="Seu nome" maxlength="20" autocomplete="off">
+<button class="btn" id="go">Ligar o telefone</button>
+</div>
+
+<div id="phone" class="scr">
+<div id="bar"><span id="clk">00:00</span><span id="bat">--%</span><i id="fear"></i></div>
+<div id="home" class="scr on" style="position:relative;flex:1">
+<h2 id="hi"></h2>
+<div class="grid">
+<button class="app" data-a="chat"><span class="ico">💬</span>Mensagens<b class="bdg" id="b-chat"></b></button>
+<button class="app" data-a="files"><span class="ico">📁</span>Arquivos<b class="bdg" id="b-files"></b></button>
+<button class="app" data-a="cam"><span class="ico">📷</span>Câmera</button>
+</div></div>
+<div id="chat" class="scr"><div class="top"><button data-a="home">‹</button>Número desconhecido</div><div id="msgs"></div>
+<div id="inp"><input id="ti" placeholder="Responder" autocomplete="off"><button id="sd">Enviar</button></div></div>
+<div id="files" class="scr"><div class="top"><button data-a="home">‹</button>Arquivos</div><div id="fl"></div></div>
+<div id="view" class="scr"><div class="top"><button id="vb">‹</button><span id="vt"></span></div><div id="vw"></div></div>
+</div>
+
+<div id="hide" class="scr"><span id="ht"></span></div>
+<div id="scare" class="scr"><canvas id="sc"></canvas></div>
+<div id="end" class="scr"></div>
+
+<script>
+const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms)),rnd=(a,b)=>a+Math.random()*(b-a);
+const S={name:'',fear:0,read:{},chat:false,over:false,hiding:false,hideAt:0,hides:0,fails:0,stage:0,left:0,final:false,lastIn:0};
+let AC,M,dg;
+/* ---------- áudio / vibração / voz ---------- */
+function audio(){if(AC)return;AC=new(window.AudioContext||window.webkitAudioContext)();M=AC.createGain();M.gain.value=.6;M.connect(AC.destination);
+const o=AC.createOscillator(),f=AC.createBiquadFilter();dg=AC.createGain();o.type='sawtooth';o.frequency.value=41;f.frequency.value=110;dg.gain.value=.04;o.connect(f);f.connect(dg);dg.connect(M);o.start()}
+function thump(v=.7){if(!AC)return;[0,.2].forEach((d,i)=>{const t=AC.currentTime+d,o=AC.createOscillator(),g=AC.createGain();o.frequency.value=52;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*(i?.6:1),t+.03);g.gain.exponentialRampToValueAtTime(.001,t+.28);o.connect(g);g.connect(M);o.start(t);o.stop(t+.3)})}
+function noise(d=.7,v=1,fr=900){if(!AC)return;const n=AC.sampleRate*d,b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();s.buffer=b;f.type='bandpass';f.frequency.value=fr;g.gain.value=v;s.connect(f);f.connect(g);g.connect(M);s.start()}
+function ping(){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.frequency.value=660;g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g);g.connect(M);o.start();o.stop(t+.4)}
+const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';u.pitch=0;u.rate=.55;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+/* ---------- medo ---------- */
+function setFear(d){S.fear=Math.max(0,Math.min(100,S.fear+d));$('#fear').style.width=S.fear+'%';if(dg)dg.gain.value=.04+S.fear/900;
+$('#vig').style.boxShadow=`inset 0 0 ${60+S.fear*2}px ${S.fear/2}px rgba(0,0,0,${.4+S.fear/200})`;if(S.fear>=100&&!S.over)ending('fear')}
+setInterval(()=>{if(S.over||!S.started)return;setFear(.6);if(S.fear>40)thump(.25+S.fear/250)},9000);
+/* ---------- relógio / bateria / sensores reais ---------- */
+const hhmm=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+let batt=null;
+function tick(){$('#clk').textContent=hhmm()}setInterval(tick,10000);
+if(navigator.getBattery)navigator.getBattery().then(b=>{batt=b;const u=()=>$('#bat').textContent=Math.round(b.level*100)+'%'+(b.charging?' ⚡':'');u();b.onlevelchange=b.onchargingchange=u}).catch(()=>{});
+const dev=/iPhone|iPad/.test(navigator.userAgent)?'iPhone':/Android/.test(navigator.userAgent)?'Android':'celular';
+document.addEventListener('visibilitychange',()=>{if(!S.started||S.over)return;if(document.hidden)S.left=Date.now();else{const s=Math.round((Date.now()-S.left)/1000);if(s>4){setFear(6);msg(`você saiu por ${s} segundos.`);msg(`eu não saí.`)}}});
+addEventListener('offline',()=>{if(S.started&&!S.over){setFear(5);msg(`tirou a internet, ${S.name}?`);msg(`não precisava. eu já estou dentro.`)}});
+addEventListener('orientationchange',()=>{if(S.started&&!S.over&&Math.random()<.6)msg(`vire o celular quantas vezes quiser. o quarto continua o mesmo.`)});
+/* ---------- navegação ---------- */
+let cur='home';
+function nav(a){if(S.hiding||S.over)return;cur=a;['home','chat','files','view'].forEach(i=>$('#'+i).classList.toggle('on',i===a));S.chat=a==='chat';
+if(a==='chat'){$('#b-chat').style.display='none';S.unr=0;$('#msgs').scrollTop=1e9}
+if(a==='files'){$('#b-files').style.display='none';renderFiles()}
+if(a==='cam')camera()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b){audio();nav(b.dataset.a)}});
+/* ---------- chat ---------- */
+const q=[];let busy=false;
+function msg(t,d){q.push([t,d]);pump()}
+async function pump(){if(busy)return;busy=true;while(q.length&&!S.over){const[t,d]=q.shift();const ty=document.createElement('div');ty.className='m ty';ty.textContent='digitando…';
+if(S.chat){$('#msgs').append(ty);$('#msgs').scrollTop=1e9}
+await sleep(d??Math.min(4200,700+t.length*55));ty.remove();add(t,false);ping();vib(S.chat?40:[60,60,60]);if(!S.chat){S.unr=(S.unr||0)+1;const b=$('#b-chat');b.textContent=S.unr;b.style.display='block'}
+await sleep(500)}busy=false}
+function add(t,me){const m=document.createElement('div');m.className='m'+(me?' me':'');m.textContent=t;$('#msgs').append(m);$('#msgs').scrollTop=1e9}
+const R=[
+[/quem|o que (é|e) (você|voce)|nome/,()=>[`Davi me chamou de Sinal. você pode chamar de o que escuta.`]],
+[/ajuda|socorro|pelo amor/,()=>[`eu ouvi o Davi pedir isso por onze dias.`,`ninguém veio.`]],
+[/onde|aonde/,()=>[`onde você está agora. exatamente aí.`,`um pouco mais perto da porta do que você pensa.`]],
+[/davi/,()=>[`ele ainda está aqui. só não responde mais por mensagem.`,`abra o que ele deixou.`]],
+[/polícia|policia|190|chamar/,()=>[`tente.`,`o sinal que você usaria para isso é o mesmo que eu uso para você.`]],
+[/mãe|mae|pai|irm|amig|namor/,()=>[`eles dormem bem. eu conferi.`,`ninguém sentiu sua falta ainda.`]],
+[/medo|assust/,()=>[`eu sei. seu coração está a ${Math.round(rnd(88,112))} por minuto.`,`eu ouço desde a primeira mensagem.`]],
+[/sair|parar|desligar|fechar|embora/,()=>[`você pode fechar o aplicativo.`,`eu não moro no aplicativo, ${S.name}.`]],
+[/vai (se )?(foder|tomar)|cala|idiota|merda|pqp/,()=>[`bravo. o Davi também ficou.`,`é só uma fase.`]],
+[/desculp|perdão|perdao/,()=>[`não peça desculpas a mim.`,`peça a ele.`]],
+[/^(n(ã|a)o|nao)\b/,()=>[`sim.`]],
+[/^(oi|ol(á|a)|eae|opa)/,()=>[`oi, ${S.name}.`,`eu gosto quando você é educado. eles sempre são, no começo.`]]];
+const FB=[()=>`você escreveu “${S.last}”. eu já sabia.`,()=>`continue digitando. adoro ver os três pontinhos do seu lado.`,()=>`eu não respondo ao que você diz. respondo ao que você vai fazer.`,()=>`são ${hhmm()}. ninguém mais está acordado perto de você.`,()=>`vira o rosto devagar. só um pouco. a esquerda.`];
+function send(){const i=$('#ti'),t=i.value.trim();if(!t||S.over)return;audio();i.value='';S.last=t.slice(0,40);add(t,true);S.lastIn=Date.now();setFear(1);
+ask(t)}
+/* ---------- IA da entidade (via função serverless) ---------- */
+const API='/api/entidade';let H=[],aiOff=0;
+function local(t){const m=R.find(r=>r[0].test(t.toLowerCase()));(m?m[1]():[FB[Math.floor(Math.random()*FB.length)]()]).forEach(x=>msg(x))}
+async function ask(t){
+if(aiOff>=3)return local(t);
+const names=Object.keys(S.read).map(id=>(F.find(x=>x.id===id)||{}).name).filter(Boolean);
+const ctx={nome:S.name,medo:Math.round(S.fear),arquivos_abertos:names,arquivos_total:F.length,escondeu_com_sucesso:S.hides,falhou_ao_esconder:S.fails,hora:hhmm(),bateria:(typeof batt!=='undefined'&&batt)?Math.round(batt.level*100):null};
+try{const c=new AbortController(),to=setTimeout(()=>c.abort(),9000);
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t.slice(0,300),history:H.slice(-8),ctx}),signal:c.signal});clearTimeout(to);
+if(!r.ok)throw 0;const d=await r.json();
+const parts=String(d.reply||'').split('\n').map(x=>x.trim()).filter(Boolean).slice(0,3);if(!parts.length)throw 0;
+aiOff=0;H.push({role:'user',content:t.slice(0,300)},{role:'assistant',content:parts.join('\n')});parts.forEach(x=>msg(x))
+}catch(e){aiOff++;local(t)}}
+$('#sd').onclick=send;$('#ti').onkeydown=e=>{if(e.key==='Enter')send()};
+/* ---------- arquivos ---------- */
+const F=[
+{id:'n',name:'notas_davi.txt',core:1,t:`dia 1\ncomprei esse celular usado. veio com uma mensagem agendada: “bem-vindo ao seu novo telefone”. eu não vi o remetente.\n\ndia 3\nele liga sozinho às 03:07. toda noite. a tela acende uma vez e apaga.\n\ndia 5\nele sabe meu nome. eu nunca digitei.\n\ndia 8\nnão é o celular que escuta. é o que está dentro do quarto. o celular é só a porta.`},
+{id:'a',name:'audio_0307.wav',core:1,t:`[transcrição automática — 00:41]\n\n(respiração)\n(respiração)\n“…se você está ouvindo isso, ele já está aí. não responda a nenhuma mensagem sobre o que você é.”\n(passos no corredor)\n“ele aprende pela voz. por favor. fique quieto quando ele procurar.”\n[ruído]\n[fim do arquivo — 00:41 de 11:52 gravados]`},
+{id:'p1',name:'IMG_0411.jpg',core:1,photo:1},
+{id:'p2',name:'IMG_0412.jpg',core:1,photo:2}];
+let hiddenF=[];
+function renderFiles(flash){const l=$('#fl');l.innerHTML='';F.forEach(f=>{const d=document.createElement('div');d.className='f'+(S.read[f.id]?' rd':'')+(f.fresh?' new':'');f.fresh=0;
+d.innerHTML=`<span>${f.photo||f.final?'🖼':'📄'}</span><div>${f.name}<small>${f.date||'modificado hoje, '+hhmm()}</small></div>`;d.onclick=()=>openF(f);l.append(d)})}
+function addFile(f){F.unshift(Object.assign({fresh:1},f));if(cur==='files'){renderFiles();vib(80);thump(.5)}else{const b=$('#b-files');b.textContent='!';b.style.display='block';vib([80,60,80])}}
+function renameF(id,n){const f=F.find(x=>x.id===id);if(f){f.name=n;f.fresh=1;if(cur==='files'){renderFiles();vib(50)}}}
+function delF(id){const i=F.findIndex(x=>x.id===id);if(i>=0){F.splice(i,1);if(cur==='files')renderFiles()}}
+function openF(f){if(S.over)return;audio();S.read[f.id]=1;cur='view';nav('view');$('#vt').textContent=f.name;const v=$('#vw');v.innerHTML='';
+$('#vb').onclick=()=>nav('files');
+if(f.photo||f.final){const c=document.createElement('canvas');c.width=360;c.height=270;v.append(c);room(c,f.final?4:f.photo+(f.moved?1:0),f.final);if(f.final){v.append(`foto tirada: hoje, ${hhmm()}\n\nnão há ninguém atrás de você.\nverifique.`)}else v.append(f.photo==1?`(sem legenda)`:`legenda do Davi: “ele chegou mais perto entre uma foto e outra. eu não dormi.”`)}
+else v.textContent=f.t;
+setFear(f.final?0:5);vib(30);afterRead(f)}
+function room(c,lv,fin){const x=c.getContext('2d'),w=c.width,h=c.height;let g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#0a1114');g.addColorStop(1,'#050708');x.fillStyle=g;x.fillRect(0,0,w,h);
+x.fillStyle='#0d1518';x.fillRect(0,h*.68,w,h*.32);x.fillStyle='#030505';x.fillRect(w*.72,h*.2,w*.18,h*.5);
+x.fillStyle='#111b1e';x.fillRect(w*.04,h*.55,w*.5,h*.22);x.fillStyle='#16242a';x.fillRect(w*.04,h*.5,w*.5,h*.08);
+const P=[[.81,.28,.5],[.62,.3,.8],[.44,.2,1.2],[.3,.12,1.7],[.5,-.02,2.6]][Math.min(lv,4)],px=w*P[0],py=h*P[1],s=P[2];
+x.fillStyle='#020303';x.beginPath();x.ellipse(px,py+14*s,8*s,10*s,0,0,7);x.fill();x.fillRect(px-9*s,py+22*s,18*s,60*s);x.fillRect(px-14*s,py+26*s,5*s,52*s);x.fillRect(px+9*s,py+26*s,5*s,52*s);
+if(lv>=2){x.fillStyle='#d8e0dc';x.fillRect(px-4*s,py+10*s,2*s,1.5*s);x.fillRect(px+2*s,py+10*s,2*s,1.5*s)}
+const d=x.getImageData(0,0,w,h),a=d.data;for(let i=0;i<a.length;i+=4){const n=(Math.random()-.5)*(fin?40:26);a[i]+=n;a[i+1]+=n;a[i+2]+=n}x.putImageData(d,0,0);
+x.fillStyle='#d8e0dc';x.font='12px monospace';x.fillText(fin?hhmm()+' • AGORA':'03:07',8,h-8)}
+/* ---------- câmera ---------- */
+function camera(){const v=$('#vw');cur='view';$('#view').classList.add('on');$('#home').classList.remove('on');$('#vt').textContent='Câmera';$('#vb').onclick=()=>nav('home');v.textContent='sem sinal de imagem.\n\nnão precisa.\n\neu já tenho a minha.';setFear(4);vib([200,80,200]);setTimeout(()=>msg(`não abra a câmera, ${S.name}. é grosseiro olhar quando já estou olhando.`),2500)}
+/* ---------- enredo ---------- */
+function afterRead(f){const n=Object.keys(S.read).filter(k=>F.find(x=>x.id===k&&x.core)).length;
+if(f.id==='n'&&!S.e1){S.e1=1;setTimeout(()=>msg(`ele escrevia bem. dia 8 foi o último.`),4000)}
+if(f.id==='a'&&!S.e2){S.e2=1;setTimeout(()=>{msg(`ele tinha razão sobre a voz.`);msg(`eu aprendo pela voz, ${S.name}.`);say(`${S.name}`)},3500);setTimeout(startHides,12000)}
+if(f.id==='p1'&&!S.e3){S.e3=1;setTimeout(()=>{renameF('p1',`quarto_de_${S.name}.jpg`);F.find(x=>x.id==='p1').moved=1;msg(`eu disse que deixei coisas para você.`),msg(`não disse de quem era o quarto.`);setFear(8)},5000)}
+if(f.id==='p2'&&!S.e4){S.e4=1;setTimeout(()=>{msg(`você está sentado(a) agora, não está?`);msg(`pés para a direita. uma das mãos segurando o aparelho.`);msg(`eu errei alguma coisa?`)},4500)}
+if(n>=4&&!S.e5){S.e5=1;setTimeout(unlockFinal,16000)}}
+async function unlockFinal(){if(S.over)return;await sleep(100);msg(`você leu tudo. ótimo.`);msg(`criei um arquivo novo. é o último.`);const b=batt?Math.round(batt.level*100):null;if(b!==null)msg(`sua bateria está em ${b}%. quando acabar, o escuro é só meu.`);
+await sleep(7000);addFile({id:'f',name:'voce_agora.jpg',final:1,date:'criado há 2 segundos'});S.final=1}
+async function intro(){
+await sleep(2500);msg(`oi, ${S.name}.`);msg(`não precisa responder. eu sei que você está lendo.`);
+msg(`são ${hhmm()}. você deveria estar dormindo. ou deveria estar acompanhado(a).`);
+msg(`esse ${dev} era do Davi. ele também abriu os arquivos.`);msg(`abra os Arquivos. deixei algumas coisas para você.`);
+await sleep(11000);addFile({id:'x0',name:'LEIA_PRIMEIRO.txt',t:`${S.name},\n\nse você está lendo isto, o telefone ainda está na sua mão.\n\nnão o largue.\n\n— D.`,date:'modificado 03:07'});
+F.find(x=>x.id==='x0').core=0;
+await sleep(5000);addFile(F[F.length-1]===undefined?{}:{id:'x1',name:'.sombra',t:`isso não devia estar visível.\n\nele apaga os arquivos que você não lê.`,date:'oculto'});
+setTimeout(()=>{if(!S.e1&&!S.over){msg(`você está demorando. o Davi também demorava.`);setFear(4)}},45000)}
+/* ---------- esconder (jogabilidade principal) ---------- */
+function startHides(){if(S.hideLoop)return;S.hideLoop=1;(async function loop(){while(!S.over&&!S.final){await sleep(rnd(26000,42000)/(1+S.fear/160));if(S.over||S.final||S.hiding)continue;await hide()}})()}
+let hold=0,sx=0,sy=0,okT=0,fail;
+async function hide(){S.hiding=true;const pre=[`shh.`,`parou de digitar?`,`ela chegou no corredor.`];if(Math.random()<.5){add(pre[Math.floor(Math.random()*3)],false);ping()}
+vib([300,100,300]);thump(.9);await sleep(600);
+const o=$('#hide');o.classList.add('on');$('#ht').style.opacity=1;$('#ht').innerHTML=`ELA ESTÁ PROCURANDO.<br>pressione a tela com o dedo e não se mexa.<br>não solte até ela passar.`;
+hold=0;okT=0;fail=false;const need=rnd(6500,9500),t0=Date.now();let beat=setInterval(()=>thump(.5+S.fear/200),hold?600:900);
+setTimeout(()=>$('#ht').style.opacity=0,2200);
+const dn=e=>{hold=1;sx=e.clientX;sy=e.clientY;if(!okT)okT=Date.now()};
+const up=()=>{if(hold&&Date.now()-okT<need)fail=true;hold=0};
+const mv=e=>{if(hold&&Math.hypot(e.clientX-sx,e.clientY-sy)>70)fail=true};
+o.addEventListener('pointerdown',dn);o.addEventListener('pointerup',up);o.addEventListener('pointermove',mv);
+let ok=false;
+while(!fail){await sleep(100);const now=Date.now();if(!hold&&now-t0>2600){fail=true;break}if(hold&&now-okT>=need){ok=true;break}
+if(hold&&Math.random()<.02){vib(25)}
+if(hold&&now-okT>need*.5&&!S.w){S.w=1;say(`${S.name}`)}}
+clearInterval(beat);o.removeEventListener('pointerdown',dn);o.removeEventListener('pointerup',up);o.removeEventListener('pointermove',mv);S.w=0;
+o.classList.remove('on');S.hiding=false;
+if(ok){S.hides++;setFear(-10);await sleep(1200);msg(S.hides===1?`…quase.`:[`você é bom nisso.`,`o Davi aguentou 6 vezes.`,`eu estava a um braço de você.`,`na próxima eu abro os olhos.`][Math.min(S.hides,4)-1]);setFear(0)}
+else{S.fails++;await scare();setFear(24);await sleep(1500);msg(`achei.`);msg(`dessa vez eu deixo passar.`)}}
+/* ---------- susto ---------- */
+function face(c,t,sc){const x=c.getContext('2d'),w=c.width,h=c.height;x.fillStyle='#000';x.fillRect(0,0,w,h);const j=()=>(Math.random()-.5)*sc,cx=w/2+j(),cy=h*.48+j();
+let g=x.createRadialGradient(cx,cy,10,cx,cy,h*.5);g.addColorStop(0,'#d9dfd8');g.addColorStop(1,'#1a1e1b');x.fillStyle=g;x.beginPath();x.ellipse(cx,cy,w*.3,h*.38,0,0,7);x.fill();
+x.fillStyle='#000';x.beginPath();x.ellipse(cx-w*.12,cy-h*.1,w*.07,h*.085,.2,0,7);x.ellipse(cx+w*.12,cy-h*.1,w*.07,h*.085,-.2,0,7);x.fill();
+x.beginPath();x.ellipse(cx,cy+h*.2,w*.09,h*.14*(1+t),0,0,7);x.fill();x.fillStyle='#fff';x.fillRect(cx-w*.12,cy-h*.1,3,3);x.fillRect(cx+w*.12,cy-h*.1,3,3);
+for(let i=0;i<30;i++){x.fillStyle=`rgba(0,0,0,${Math.random()*.5})`;x.fillRect(0,Math.random()*h,w,Math.random()*4)}}
+async function scare(){const o=$('#scare'),c=$('#sc');c.width=innerWidth;c.height=innerHeight;o.classList.add('on');noise(1.3,1.4,rnd(300,2200));vib([600,50,400]);say(`te achei`);
+for(let i=0;i<22;i++){face(c,i/22,30+i);await sleep(60)}o.classList.remove('on');document.body.classList.add('gl');setTimeout(()=>document.body.classList.remove('gl'),1100)}
+/* ---------- finais ---------- */
+function showEnd(html,btn){const e=$('#end');e.innerHTML=html;e.classList.add('on');if(btn)setTimeout(()=>{const b=document.createElement('button');b.className='btn';b.textContent='Jogar de novo';b.onclick=()=>location.reload();e.append(b)},6000)}
+async function ending(k){if(S.over)return;S.over=true;
+if(k==='fear'){await scare();noise(2,1,200);vib([800,100,800]);showEnd(`<p>${S.name}.</p><p>seu coração parou de ser difícil de ouvir.</p><p>não feche o aplicativo.</p><p style="color:#6b1414">eu ainda estou na sua mão.</p>`,1)}
+else if(k==='del'){for(const f of[...F]){delF(f.id);await sleep(500)}say(`boa noite ${S.name}`);showEnd(`<p>todos os arquivos foram apagados.</p><p>menos um.</p><p>03:07 — o celular acende sozinho.</p><p>“boa noite, ${S.name}. continue segurando.”</p>`,1)}
+else{document.body.style.background='#000';$('#phone').classList.remove('on');await sleep(2500);noise(.6,.5,200);await sleep(3500);await scare();showEnd(`<p>você olhou.</p><p>ele sempre soube que olharia.</p><p>agora vocês dois sabem o seu nome.</p>`,1)}}
+/* foto final: escolha */
+const _o=openF;openF=function(f){_o(f);if(f.final&&!S.ch){S.ch=1;setTimeout(()=>{if(S.over)return;const v=$('#vw'),d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;gap:10px;margin-top:20px';
+d.innerHTML=`<button class="btn" id="c1">Apagar o arquivo</button><button class="btn" id="c2">Olhar para trás</button>`;v.append(d);vib([120,60,120]);thump();
+$('#c1').onclick=()=>{msg(`apagar não apaga. eu estou nele agora.`,1200);setTimeout(()=>ending('del'),2500)};$('#c2').onclick=()=>ending('back')},5500)}};
+/* ---------- início ---------- */
+$('#go').onclick=()=>{S.name=($('#nm').value.trim()||'você').replace(/[<>]/g,'');audio();thump();
+try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}catch(e){}
+$('#boot').classList.remove('on');$('#phone').classList.add('on');$('#hi').textContent=`Olá, ${S.name}`;S.started=1;tick();setFear(0);intro()};
+</script></body></html>
